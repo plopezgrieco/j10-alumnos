@@ -1,15 +1,25 @@
 package negocio;
 
-import java.util.Collection;
 import java.util.Set;
 
 import modelo.Alumno;
 
 public interface GestionAlumnos {
 
-	Set<Alumno> getAprobados(Collection<Alumno> alumnos);
+	public Set<Alumno> getAprobados();
+
+	public double getMediaNotas();
+
+	public double getMediaAprobados();
 	
-	double getMediaNotas(Collection<Alumno> alumnos);
 	
-	double getMediaAprobados(Collection<Alumno> alumnos);
+	public Set<Alumno> getAlumnos();
+
+	public Set<Alumno> getAlumnosByNombre(String nombre);
+	
+	public Alumno getAlumnoByDni(String dni);
+
+	public void save(Alumno alumno);
+	
+	public void delete(Alumno alumno);
 }

@@ -5,46 +5,67 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import modelo.Alumno;
+import persistencia.AlumnoDao;
+import persistencia.AlumnoDaoMem;
 
 public class GestionAlumnosImpl implements GestionAlumnos {
 
+	private AlumnoDao dao;
+	
+	public GestionAlumnosImpl() {
+		dao = new AlumnoDaoMem();
+	}
+	
 	@Override
-	public Set<Alumno> getAprobados(Collection<Alumno> alumnos) {
-		Set<Alumno> aprobados = new TreeSet<Alumno>(Alumno.getComparatorApellidos());
-		aprobados.addAll(alumnos.stream().filter(a -> a.getNota() >=5).toList());
+	public Set<Alumno> getAprobados() {
+		Set<Alumno> aprobados = new TreeSet<Alumno>(Alumno.ordenAlfabetico());
+		for (Alumno alumno : dao.findAll()) {
+			if (alumno.getNota() >= 5)
+				aprobados.add(alumno);
+		}
 		return aprobados;
 	}
-	
-//	@Override
-//	public Set<Alumno> getAprobados(Collection<Alumno> alumnos) {
-//		Set<Alumno> aprobados = new TreeSet<Alumno>(Alumno.getComparatorApellidos());
-//		for (Alumno alumno : alumnos) {
-//			if(alumno.getNota() >= 5)
-//				aprobados.add(alumno);
-//		}
-//		return aprobados;
-//	}
 
-	@Override
-	public double getMediaNotas(Collection<Alumno> alumnos) {
-		return getMedia(alumnos);
+	private double getMediaNotasFromCollection(Collection<Alumno> alumnos) {
+		double suma = 0;
+		for (Alumno alumno : alumnos)
+			suma += alumno.getNota();
+		return suma / alumnos.size();
 	}
-
-	private double getMedia(Collection<Alumno> alumnos) {
-		double sumNotas = 0;
-		for (Alumno alumno : alumnos) {
-			sumNotas += alumno.getNota();
-		}
-		return sumNotas / alumnos.size();
-	}
-
-//	private double getMedia(Collection<Alumno> alumnos) {
-//		return alumnos.stream().mapToDouble(Alumno::getNota).average().getAsDouble();
-//	}
 	
 	@Override
-	public double getMediaAprobados(Collection<Alumno> alumnos) {
-		return getMedia(getAprobados(alumnos));
+	public double getMediaNotas() {
+		return getMediaNotasFromCollection(dao.findAll());
+	}
+
+	@Override
+	public double getMediaAprobados() {
+		return getMediaNotasFromCollection(getAprobados());
+	}
+
+	@Override
+	public Set<Alumno> getAlumnos() {
+		return dao.findAll();
+	}
+
+	@Override
+	public Set<Alumno> getAlumnosByNombre(String nombre) {
+		return dao.findAllByNombre(nombre);
+	}
+
+	@Override
+	public Alumno getAlumnoByDni(String dni) {
+		return dao.findById(dni);
+	}
+
+	@Override
+	public void save(Alumno alumno) {
+		dao.save(alumno);
+	}
+
+	@Override
+	public void delete(Alumno alumno) {
+		dao.delete(alumno);
 	}
 
 }
